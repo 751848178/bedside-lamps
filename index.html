@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>床头吊灯</title>
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Segoe UI", sans-serif;
+    background: #0c0a09;
+    color: #e7e5e4;
+    min-height: 100vh;
+  }
+  .page {
+    max-width: 768px;
+    margin: 0 auto;
+    padding: 32px 16px;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  h1 { font-size: 20px; font-weight: 500; margin: 0; }
+  .sub { font-size: 14px; color: #a8a29e; margin: 4px 0 16px; }
+  .card {
+    border: 1px solid #292524;
+    border-radius: 16px;
+    background: #1c1917;
+    overflow: hidden;
+  }
+  svg.scene {
+    display: block;
+    width: 100%;
+    height: auto;
+    touch-action: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  svg text { font-family: inherit; }
+  .controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px 24px;
+    margin-top: 16px;
+    font-size: 14px;
+    color: #a8a29e;
+  }
+  .controls .spacer { flex: 1; }
+  .switch { position: relative; display: inline-block; width: 36px; height: 20px; vertical-align: middle; margin-right: 6px; }
+  .switch input { opacity: 0; width: 0; height: 0; }
+  .slider {
+    position: absolute; inset: 0; border-radius: 999px;
+    background: #44403c; transition: background 0.2s; cursor: pointer;
+  }
+  .slider::before {
+    content: ""; position: absolute; left: 2px; top: 2px;
+    width: 16px; height: 16px; border-radius: 50%;
+    background: #fafaf9; transition: transform 0.2s;
+  }
+  .switch input:checked + .slider { background: #fbbf24; }
+  .switch input:checked + .slider::before { transform: translateX(16px); background: #1c1917; }
+  .height-read {
+    font-variant-numeric: tabular-nums;
+    color: #fafaf9;
+    font-weight: 500;
+  }
+  .toast {
+    margin-top: 8px;
+    font-size: 12px;
+    color: #78716c;
+    height: 16px;
+  }
+  .foot { margin-top: 24px; font-size: 12px; color: #57534e; }
+
+  /* 左灯：锁定抖动反馈 */
+  @keyframes locked-shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-3px); }
+    75% { transform: translateX(3px); }
+  }
+  .shake { animation: locked-shake 0.28s ease-in-out 2; }
+</style>
+</head>
+<body>
+<div class="page">
+  <h1>床头吊灯</h1>
+  <p class="sub">左灯高度锁定，右灯可上下拖动悬停</p>
+
+  <div class="card">
+    <svg id="scene" class="scene" viewBox="0 0 720 440" role="img" aria-label="两盏床头吊灯，左侧固定高度，右侧可上下拖拽调整高度">
+      <defs>
+        <radialGradient id="glowOn" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#fbbf24" stop-opacity="0.55"/>
+          <stop offset="55%" stop-color="#fbbf24" stop-opacity="0.16"/>
+          <stop offset="100%" stop-color="#fbbf24" stop-opacity="0"/>
+        </radialGradient>
+        <radialGradient id="poolOn" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#fbbf24" stop-opacity="0.32"/>
+          <stop offset="100%" stop-color="#fbbf24" stop-opacity="0"/>
+        </radialGradient>
+      </defs>
+
+      <!-- 天花板与轨道 -->
+      <rect x="0" y="0" width="720" height="26" fill="#292524"/>
+      <line x1="0" y1="26" x2="720" y2="26" stroke="#44403c" stroke-width="1"/>
+      <rect x="180" y="30" width="360" height="8" rx="4" fill="#44403c"/>
+
+      <!-- 地板 -->
+      <rect x="0" y="416" width="720" height="24" fill="#292524"/>
+      <line x1="0" y1="416" x2="720" y2="416" stroke="#44403c" stroke-width="1"/>
+
+      <!-- 床 -->
+      <g>
+        <rect x="270" y="296" width="180" height="122" rx="10" fill="#3f3a36" stroke="#57534e" stroke-width="1"/>
+        <rect x="278" y="330" width="164" height="80" rx="8" fill="#1c1917" stroke="#44403c" stroke-width="1"/>
+        <rect x="286" y="302" width="64" height="30" rx="8" fill="#44403c" stroke="#57534e" stroke-width="1"/>
+        <rect x="370" y="302" width="64" height="30" rx="8" fill="#44403c" stroke="#57534e" stroke-width="1"/>
+        <rect x="278" y="352" width="164" height="18" rx="6" fill="#3f3a36"/>
+      </g>
+
+      <!-- 床头柜 -->
+      <g>
+        <rect x="180" y="352" width="80" height="64" rx="6" fill="#3f3a36" stroke="#57534e" stroke-width="1"/>
+        <line x1="180" y1="384" x2="260" y2="384" stroke="#57534e" stroke-width="1"/>
+        <circle cx="220" cy="368" r="3" fill="#78716c"/>
+        <circle cx="220" cy="400" r="3" fill="#78716c"/>
+        <rect x="460" y="352" width="80" height="64" rx="6" fill="#3f3a36" stroke="#57534e" stroke-width="1"/>
+        <line x1="460" y1="384" x2="540" y2="384" stroke="#57534e" stroke-width="1"/>
+        <circle cx="500" cy="368" r="3" fill="#78716c"/>
+        <circle cx="500" cy="400" r="3" fill="#78716c"/>
+      </g>
+
+      <!-- 左灯灯光 -->
+      <g id="lightL">
+        <circle cx="220" cy="236" r="72" fill="url(#glowOn)"/>
+        <ellipse cx="220" cy="352" rx="46" ry="10" fill="url(#poolOn)"/>
+      </g>
+      <!-- 右灯灯光（随灯移动） -->
+      <g id="lightR">
+        <circle id="glowR" cx="500" cy="234" r="72" fill="url(#glowOn)"/>
+        <ellipse cx="500" cy="352" rx="46" ry="10" fill="url(#poolOn)"/>
+      </g>
+
+      <!-- 左灯：固定高度 -->
+      <g id="lampL">
+        <rect x="212" y="38" width="16" height="10" rx="3" fill="#57534e"/>
+        <line x1="220" y1="48" x2="220" y2="196" stroke="#a8a29e" stroke-width="2"/>
+        <path d="M196 224 L244 224 L234 196 L206 196 Z" fill="#0c0a09" stroke="#57534e" stroke-width="1"/>
+        <rect x="214" y="224" width="12" height="6" rx="2" fill="#0c0a09"/>
+        <circle id="bulbL" cx="220" cy="234" r="7" fill="#fbbf24"/>
+        <!-- 锁形标记 -->
+        <g transform="translate(258,150)">
+          <rect x="-7" y="-1" width="14" height="11" rx="3" fill="none" stroke="#a8a29e" stroke-width="1.6"/>
+          <path d="M-4 -1 L-4 -5 A4 4 0 0 1 4 -5 L4 -1" fill="none" stroke="#a8a29e" stroke-width="1.6"/>
+        </g>
+        <rect id="hitL" x="188" y="40" width="64" height="204" fill="transparent" style="cursor:not-allowed"/>
+        <text x="220" y="120" text-anchor="middle" font-size="12" fill="#78716c">固定高度</text>
+      </g>
+
+      <!-- 右灯：只能垂直拖动。电线顶端固定天花板，底端与灯罩相连 -->
+      <g id="lampR" style="cursor:grab">
+        <rect x="492" y="38" width="16" height="10" rx="3" fill="#57534e"/>
+        <line id="cordR" x1="500" y1="48" x2="500" y2="196" stroke="#a8a29e" stroke-width="2"/>
+        <g id="lampR-move">
+          <path d="M476 224 L524 224 L514 196 L486 196 Z" fill="#0c0a09" stroke="#57534e" stroke-width="1"/>
+          <rect x="494" y="224" width="12" height="6" rx="2" fill="#0c0a09"/>
+          <circle id="bulbR" cx="500" cy="234" r="7" fill="#fbbf24"/>
+        </g>
+        <text x="500" y="120" text-anchor="middle" font-size="12" fill="#78716c">可自由悬停</text>
+        <circle id="hitR" cx="500" cy="210" r="150" fill="transparent" style="touch-action:none"/>
+      </g>
+    </svg>
+  </div>
+
+  <div class="controls">
+    <label><span class="switch"><input id="switchL" type="checkbox" checked><span class="slider"></span></span>左灯</label>
+    <label><span class="switch"><input id="switchR" type="checkbox" checked><span class="slider"></span></span>右灯</label>
+    <span class="spacer"></span>
+    <span>右灯绳长 <span class="height-read" id="heightRead">1.48 m</span></span>
+  </div>
+  <div class="toast" id="toast" aria-live="polite"></div>
+
+  <p class="foot">提示：上下拖拽右灯调整悬停高度；左灯已锁定。手机端同样可拖。</p>
+</div>
+
+<script>
+(function () {
+  var svg = document.getElementById('scene');
+
+  // 右灯只有一个自由度：绳长 L（px），始终竖直
+  var MIN_L = 80, MAX_L = 260, START_L = 148;
+  var L = START_L;
+  var dragging = false, lastY = 0;
+
+  var moveG = document.getElementById('lampR-move');
+  var cordR = document.getElementById('cordR');
+  var glowR = document.getElementById('glowR');
+  var bulbR = document.getElementById('bulbR');
+  var hitR = document.getElementById('hitR');
+  var heightRead = document.getElementById('heightRead');
+
+  function render() {
+    // 灯罩 + 灯泡整体竖直平移；电线顶端固定在天花板，底端 y2 随绳长伸长，与灯罩永不分断
+    moveG.setAttribute('transform', 'translate(0 ' + (L - START_L) + ')');
+    cordR.setAttribute('y2', 48 + L);
+    // 光晕中心 = 天花板支点正下方 (L + 86) 处（86 = 灯泡相对绳末端的偏移）
+    glowR.setAttribute('cy', 48 + L + 86);
+    heightRead.textContent = (L / 100).toFixed(2) + ' m';
+  }
+
+  // ---- 灯光开关 ----
+  function setLight(on, lightG, bulb) {
+    lightG.style.display = on ? '' : 'none';
+    bulb.setAttribute('fill', on ? '#fbbf24' : '#57534e');
+  }
+  document.getElementById('switchL').addEventListener('change', function (e) {
+    setLight(e.target.checked, document.getElementById('lightL'), document.getElementById('bulbL'));
+  });
+  document.getElementById('switchR').addEventListener('change', function (e) {
+    setLight(e.target.checked, document.getElementById('lightR'), bulbR);
+  });
+
+  // ---- 左灯：锁定反馈 ----
+  var toast = document.getElementById('toast'), toastTimer = null;
+  function showToast(msg) {
+    toast.textContent = msg;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { toast.textContent = ''; }, 1600);
+  }
+  document.getElementById('hitL').addEventListener('pointerdown', function (e) {
+    e.preventDefault();
+    var g = document.getElementById('lampL');
+    g.classList.remove('shake');
+    void g.getBoundingClientRect(); // 重启动画
+    g.classList.add('shake');
+    showToast('左灯高度已锁定，无法移动');
+  });
+
+  // ---- 右灯：只垂直拖动 ----
+  function svgY(evt) {
+    var pt = svg.createSVGPoint();
+    pt.x = evt.clientX; pt.y = evt.clientY;
+    return pt.matrixTransform(svg.getScreenCTM().inverse()).y;
+  }
+  hitR.addEventListener('pointerdown', function (e) {
+    e.preventDefault();
+    dragging = true;
+    lastY = svgY(e);
+    hitR.setPointerCapture(e.pointerId);
+  });
+  hitR.addEventListener('pointermove', function (e) {
+    if (!dragging) return;
+    var y = svgY(e);
+    var dy = y - lastY;
+    lastY = y;
+    // 向下拖放长吊绳（灯下移）、向上拖收短；水平分量天然忽略
+    L = Math.min(MAX_L, Math.max(MIN_L, L + dy));
+    render();
+  });
+  function endDrag() { dragging = false; }
+  hitR.addEventListener('pointerup', endDrag);
+  hitR.addEventListener('pointercancel', endDrag);
+
+  render();
+})();
+</script>
+</body>
+</html>
